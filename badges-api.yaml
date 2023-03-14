@@ -1,0 +1,129 @@
+openapi: 3.0.2
+info:
+  version: v1
+  title: Badges
+  termsOfService: 'https://impossiblemissionsforce.com/terms/'
+  contact:
+    email: contact@impossiblemissionsforce.com
+    url: 'http://impossiblemissionsforce.com/contact'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: 'https://i.ibb.co/GdHWb5v/badges.png'
+  description: Badges API allows you to create Badges rules that can be 
+applied to particular users.
+tags:
+  - name: Badges
+    description: Badges operations.
+servers:
+  - url: '{protocol}://{domain}'
+    variables:
+      domain:
+        default: api.impossiblemissionsforce.com
+      protocol:
+        default: https
+        enum:
+          - https
+paths:
+  /badges:
+    post:
+      summary: Create a badge
+      operationId: postBadges
+      responses:
+        '200':
+          description: Badge was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/badge"
+        '401':
+          description: Unauthorized.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                icon:
+                  type: string
+                requirements:
+                  $ref: "#/components/schemas/requirement"
+        description: Badge definition with icon and requirements.
+        required: true
+    get:
+      summary: Get badges
+      operationId: getBadge
+      responses:
+        '200':
+          description: List of badges defined.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/badge"
+        '401':
+          description: Unauthorized.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+components:
+  schemas:
+    requirement:
+      type: array
+      items:
+        type: object
+        properties: 
+          type:
+            type: string
+          name:
+            type: string
+          minScore:
+            type: number
+          maxAttempts:
+            type: integer
+          status:
+            type: string
+            enum:
+              - done
+              - new
+    badge:
+      type: object
+      properties: 
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: string
+        requirements:
+          $ref: "#/components/schemas/requirement"
+        createdAt: 
+          type: string
+        updatedAt:
+          type: string
+  securitySchemes:
+    IMF-KEY:
+      type: apiKey
+      name: IMF-KEY
+      in: header
+security:
+  - IMF-KEY: []
